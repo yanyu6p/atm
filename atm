@@ -1,0 +1,220 @@
+#include"stdio.h"
+#include"process.h"
+#include"stdlib.h"
+#include"windows.h"
+struct atm
+{
+	int kh,mm;
+	float yue;
+	char name[20];
+};
+struct atm atm1[6];
+void Init();
+void welcome();
+void login();
+void display();
+void out();
+void t();
+void query();
+void changepwd();
+void transfer();
+void quit();
+void cunkuan();
+int main()
+{
+
+	Init();
+	welcome();
+}
+void Init()
+{
+	int i;
+    FILE *fp;
+	fp=fopen("D:\\atm.txt","r");
+	for(i=0;i<6;i++)
+	fscanf(fp,"%s%d%d%f",atm1[i].name,&atm1[i].kh,&atm1[i].mm,&atm1[i].yue);
+	for(i=0;i<6;i++)
+	printf("%s\t%d\t%d\t%f\n",atm1[i].name,atm1[i].kh,atm1[i].mm,atm1[i].yue);
+fclose(fp);
+}
+void welcome()
+{
+	printf("\n\n\t\t****************************\n");
+	printf("\t\t欢迎使用24小时自助银行.ATM机\n");
+	printf("\t\t****************************\n");
+	Sleep(3000);
+    login();
+}
+int pos;
+void login()
+{
+  int zh,mm,i,a=1,time=1;
+
+	printf("请输入你的账号密码！！！\n");
+	printf("账号:");scanf("%d",&zh);
+	         printf("\n密码:");scanf("%d",&mm);system("cls");
+
+	for(int j=0;j<3;j++)
+	{
+	
+			
+		for(i=0;i<6;i++)
+	{
+		if(zh==atm1[i].kh&&mm==atm1[i].mm)
+		{ printf("输入正确\n");
+		a=1; pos=i;
+			Sleep(1000);
+			system("cls");
+          display();
+			break;
+		}
+		else 
+		a=0;	 
+		}
+			if (a==1)
+		break;
+
+			time++;
+			if(time>3)
+		{
+			printf("超过三次错误输入，暂停使用\n");
+			break;
+
+		
+	}
+	if(a==0)
+	{printf("密码错误或账号不存在！请重新输入\n");
+			 printf("账号:");scanf("%d",&zh);
+			 printf("\n密码:");scanf("%d",&mm);system("cls");}
+	
+
+	
+	}
+
+}
+	void display()
+	{
+		int a;
+		printf("\n\n\n\t\t*********1.取款*********\n");
+		printf("\t\t*******2.查询余额*******\n");
+		printf("\t\t*******3.修改密码*******\n");
+		printf("\t\t*********4.转帐*********\n");
+		printf("\t\t*********5.退出*********\n");
+		printf("\t\t*********6.存钱*********\n");
+		scanf("%d",&a);
+		if(a==1)
+		{system("cls");out();}
+		if(a==2)
+		{system("cls");query();}
+		if(a==3)
+		{system("cls");changepwd();}
+		if(a==4)
+		{system("cls");transfer();}
+		if(a==5)
+		{system("cls");quit();}
+		if(a==6)
+		{system("cls");cunkuan();}
+
+
+
+
+}
+	void out()
+	{
+		 FILE *fp;
+		float m;
+		
+		printf("输入你要取出的金额:");
+		scanf("%f",&m);
+		if((m>0)&&(m<=atm1[pos].yue))
+		{
+            fp=fopen("D:\\atm.txt","wb+");
+			atm1[pos].yue=atm1[pos].yue-m;
+		    t();
+			printf("**取款成功**");
+			display();
+
+		}
+		else 
+		{printf("取款失败！！！");
+		display();}
+
+	}
+	void t()
+	{
+	int i;
+    FILE *fp;
+	fp=fopen("D:\\atm.txt","w");
+	for(i=0;i<6;i++)
+	fprintf(fp,"%s %d %d %f\n",atm1[i].name,atm1[i].kh,atm1[i].mm,atm1[i].yue);
+	}
+  void query()
+  {
+	  printf("当前剩余余额为 %f\n ",atm1[pos].yue);
+  }
+  void changepwd()
+  {
+	  int c,x,y;
+	  printf("请输入原密码验证：");
+	  scanf("%d",&c);
+	  if(c==atm1[pos].mm)
+	  { printf("验证成功\n");
+	  printf("请输入修改后的密码:");
+	  scanf("%d",&x);
+	  printf("\n请再次输入修改后的密码:");
+	  scanf("%d",&y);
+	  if(x==y)
+           atm1[pos].mm=x;
+	  else
+	  {printf("修改后的密码不一致");
+	  changepwd();}
+	  t();
+	  printf("修改成功!!!!\n");	
+	  display();}
+	  else
+	  {printf("验证失败，请重新输入:");
+	  system("cls");
+      changepwd();}
+  }
+  void transfer()
+  {
+	  int i,c,b;
+	  float a;
+	  printf("请输入目标账号：");
+	  scanf("%d",&b);
+	  for(i=1;i<6;i++)
+	  if(b==atm1[i].kh)
+	  {printf("请输入您要转账的金额:");
+	  scanf("%f",&a);break;}
+			  if(i>=6)
+		  {printf("无该用户，请重新输入！\n");
+		  transfer();}
+              if(atm1[pos].yue<a)
+			  {printf("当前余额不足!");
+                  display();}
+			  else
+			  {
+				  atm1[pos].yue=atm1[pos].yue-a;
+			      atm1[i].yue=atm1[i].yue+a;
+			      t();
+				  printf("转账成功！");
+				  display();
+			  }
+	  
+
+
+  }
+  void quit()
+  {
+	  login();
+  }
+  void cunkuan()
+  {
+	  float i;
+	  printf("输入你要存入的金额:\n");
+	  scanf("%f",&i);
+	  atm1[pos].yue=atm1[pos].yue+i;
+	  t();
+	  printf("存款成功\n");
+
+  }
